@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Novena</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 5em;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 1em;
+    }
+
+    input[type="text"] {
+      font-size: 1em;
+      padding: 0.5em;
+      width: 300px;
+      text-align: center;
+    }
+
+    #result-container {
+      max-height: 250px;
+      overflow-y: auto;
+      margin-top: 2em;
+      width: 320px;
+      border: 1px solid #ccc;
+      padding: 1em;
+      border-radius: 5px;
+    }
+
+    #result ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    #result li {
+      padding: 0.3em 0;
+      cursor: pointer;
+    }
+
+    #result li:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Novena</h1>
+  <input type="text" id="search" placeholder="Enter saint's name" />
+  <div id="result-container">
+    <div id="result"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+

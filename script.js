@@ -4,16 +4,17 @@ let saintIndex = [];
 function simplify(str) {
   return str
     .toLowerCase()
-    .replace(/[^a-z\s]/g, '')
-    .replace(/\b(saint|blessed|of|the|and|in|on)\b/gi, '')
-    .replace(/\s+/g, ' ')
+    //.replace(/[^a-z\s]/g, '')
+    .replace(/\b(saint|blessed)\b/gi, '')
+    //.replace(/\s+/g, ' ')
     .trim();
 }
 
 function suggestMatches(input) {
   const normalized = input.toLowerCase();
   return saintIndex
-    .filter(entry => entry.simplified.includes(normalized) || normalized.includes(entry.simplified))
+    //.filter(entry => entry.simplified.includes(normalized) || normalized.includes(entry.simplified))
+    .filter(entry => entry.name.includes(normalized) || normalized.includes(entry.name))
     .map(entry => entry.display);
 }
 
@@ -27,7 +28,8 @@ fetch('novena.csv')
       saintIndex.push({
         key,
         display: name.replace(/-/g, ' '),
-        simplified: simplify(name)
+        //simplified: simplify(name)
+        name: name.replace(/-/g, ' ')
       });
     });
   });
@@ -41,8 +43,9 @@ document.getElementById('search').addEventListener('keydown', e => {
     if (exact) {
       renderSaintInfo(output, exact);
     } else {
-      const simplifiedQuery = simplify(e.target.value.trim());
-      const matches = suggestMatches(simplifiedQuery);
+      const matches = suggestMatches(e.target.value.trim());
+      //const simplifiedQuery = simplify(e.target.value.trim());
+	  //const matches = suggestMatches(simplifiedQuery);
 
       if (matches.length === 1) {
         const matchedKey = matches[0].toLowerCase().replace(/\s+/g, '-');

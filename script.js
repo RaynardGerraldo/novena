@@ -1,19 +1,13 @@
 let saintData = {};
 let saintIndex = [];
 
-function simplify(str) {
-  return str
-    .toLowerCase()
-    //.replace(/[^a-z\s]/g, '')
-    .replace(/\b(saint|blessed)\b/gi, '')
-    //.replace(/\s+/g, ' ')
-    .trim();
+function capitalize(str) {
+  return str.replace(/\b\w/g, char => char.toUpperCase());
 }
 
 function suggestMatches(input) {
   const normalized = input.toLowerCase();
   return saintIndex
-    //.filter(entry => entry.simplified.includes(normalized) || normalized.includes(entry.simplified))
     .filter(entry => entry.name.includes(normalized) || normalized.includes(entry.name))
     .map(entry => entry.display);
 }
@@ -24,11 +18,11 @@ fetch('novena.csv')
     csv.trim().split('\n').forEach(line => {
       const [name, feast, start_date, end_date, leap_start, leap_end] = line.split(',');
       const key = name.toLowerCase();
-      saintData[key] = { feast, start_date, end_date, leap_start, leap_end };
+      const displayname = capitalize(name).replace(/-/g, ' ');
+      saintData[key] = { displayname, feast, start_date, end_date, leap_start, leap_end };
       saintIndex.push({
         key,
         display: name.replace(/-/g, ' '),
-        //simplified: simplify(name)
         name: name.replace(/-/g, ' ')
       });
     });
@@ -44,9 +38,6 @@ document.getElementById('search').addEventListener('keydown', e => {
       renderSaintInfo(output, exact);
     } else {
       const matches = suggestMatches(e.target.value.trim());
-      //const simplifiedQuery = simplify(e.target.value.trim());
-	  //const matches = suggestMatches(simplifiedQuery);
-
       if (matches.length === 1) {
         const matchedKey = matches[0].toLowerCase().replace(/\s+/g, '-');
         renderSaintInfo(output, saintData[matchedKey]);
@@ -63,6 +54,7 @@ document.getElementById('search').addEventListener('keydown', e => {
 
 function renderSaintInfo(output, result) {
   output.innerHTML = `
+    ${result.displayname}<br>
     <strong>Feast Day:</strong> ${result.feast}<br>
     <strong>Novena Starts:</strong> ${result.start_date}<br>
     <strong>Novena Ends:</strong> ${result.end_date}` +
@@ -76,4 +68,3 @@ function handleSuggestionClick(name) {
   const output = document.getElementById('result');
   if (saint) renderSaintInfo(output, saint);
 }
-

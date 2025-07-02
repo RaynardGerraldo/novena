@@ -26,7 +26,7 @@
       text-align: center;
     }
 
-    #result-container {
+    #result-container, #today-container {
       max-height: 250px;
       overflow-y: auto;
       margin-top: 2em;
@@ -36,18 +36,18 @@
       border-radius: 5px;
     }
 
-    #result ul {
+    #result ul, #today ul {
       list-style: none;
       padding-left: 0;
       margin: 0;
     }
 
-    #result li {
+    #result li, #today li {
       padding: 0.3em 0;
       cursor: pointer;
     }
 
-    #result li:hover {
+    #result li:hover, #today li:hover {
       background-color: #f0f0f0;
     }
   </style>
@@ -57,6 +57,10 @@
   <input type="text" id="search" placeholder="Enter saint's name" />
   <div id="result-container">
     <div id="result"></div>
+  </div>
+  
+  <div id="today-container">
+    <div id="today"></div>
   </div>
 
   <script src="script.js"></script>

@@ -24,8 +24,6 @@ async function parse() {
     const [name, feast, start_date, end_date, leap_start, leap_end] = line.split(',');
     const key = name.toLowerCase();
     const displayname = capitalize(name).replace(/-/g, ' ');
-    console.log(start_date)
-    console.log(todaysDate)
     if (start_date === todaysDate) {
       foundKey.push(key)
     }
@@ -40,8 +38,6 @@ async function parse() {
 
 async function load() {
     await parse();
-    console.log(saintData);
-    console.log(foundKey);
     renderSaintInfo(today, foundKey);
 }
 

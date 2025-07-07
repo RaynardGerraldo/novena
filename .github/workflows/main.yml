@@ -1,0 +1,27 @@
+name: RSS Updater
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run Python script
+        run: python rss.py
+
+      - name: Commit and push changes as user
+        run: |
+          git config user.name "RaynardGerraldo"
+          git config user.email "raynardgerraldo@gmail.com"
+          git add .
+          git diff --cached --quiet || git commit -m "chore: update novena rss"
+          git push https://x-access-token:${{ secrets.rss }}@github.com/${{ github.repository }} HEAD:master

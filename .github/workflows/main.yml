@@ -24,4 +24,4 @@ jobs:
           git config user.email "raynardgerraldo@gmail.com"
           git add .
           git diff --cached --quiet || git commit -m "chore: update novena rss"
-          git push https://x-access-token:${{ secrets.secretum }}@github.com/${{ github.repository }} HEAD:master
+          git push https://x-access-token:${{ secrets.RSS }}@github.com/${{ github.repository }} HEAD:master

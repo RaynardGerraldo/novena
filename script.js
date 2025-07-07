@@ -1,5 +1,10 @@
 let saintData = {};
 let saintIndex = [];
+let foundKey = [];
+const today = document.getElementById('today');
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const d = new Date();
+const todaysDate = d.getUTCDate().toString().padStart(2, '0') + ' ' + months[d.getUTCMonth()];
 
 function capitalize(str) {
   return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -12,21 +17,29 @@ function suggestMatches(input) {
     .map(entry => entry.display);
 }
 
-fetch('novena.csv')
-  .then(res => res.text())
-  .then(csv => {
-    csv.trim().split('\n').forEach(line => {
-      const [name, feast, start_date, end_date, leap_start, leap_end] = line.split(',');
-      const key = name.toLowerCase();
-      const displayname = capitalize(name).replace(/-/g, ' ');
-      saintData[key] = { displayname, feast, start_date, end_date, leap_start, leap_end };
-      saintIndex.push({
-        key,
-        display: name.replace(/-/g, ' '),
-        name: name.replace(/-/g, ' ')
-      });
+async function parse() {
+  const res = await fetch('novena.csv');
+  const csv = await res.text();
+  csv.trim().split('\n').forEach(line => {
+    const [name, feast, start_date, end_date, leap_start, leap_end] = line.split(',');
+    const key = name.toLowerCase();
+    const displayname = capitalize(name).replace(/-/g, ' ');
+    if (start_date === todaysDate) {
+      foundKey.push(key)
+    }
+    saintData[key] = { displayname, feast, start_date, end_date, leap_start, leap_end };
+    saintIndex.push({
+      key,
+      display: name.replace(/-/g, ' '),
+      name: name.replace(/-/g, ' ')
     });
   });
+}
+
+async function load() {
+    await parse();
+    renderSaintInfo(today, foundKey);
+}
 
 document.getElementById('search').addEventListener('keydown', e => {
   if (e.key === 'Enter') {
@@ -53,13 +66,27 @@ document.getElementById('search').addEventListener('keydown', e => {
 });
 
 function renderSaintInfo(output, result) {
-  output.innerHTML = `
-    ${result.displayname}<br>
-    <strong>Feast Day:</strong> ${result.feast}<br>
-    <strong>Novena Starts:</strong> ${result.start_date}<br>
-    <strong>Novena Ends:</strong> ${result.end_date}` +
-    (result.leap_start ? `<br><strong>Leap Year start:</strong> ${result.leap_start}<br>
-    <strong>Leap Year end:</strong> ${result.leap_end}` : '');
+  if (Array.isArray(result)) {
+    output.innerHTML = `<strong>Novenas you can start today:</strong><br>`
+    for (let i = 0; i < result.length; i++) {
+        today.innerHTML += `${saintData[result[i]].displayname}<br>`
+    }
+    today.innerHTML += `
+        <strong>Feast Day:</strong> ${saintData[result[0]].feast}<br>
+        <strong>Novena Starts:</strong> ${saintData[result[0]].start_date}<br>
+        <strong>Novena Ends:</strong> ${saintData[result[0]].end_date}` +
+        (saintData[result[0]].leap_start ? `<br><strong>Leap Year start:</strong> ${saintData[result[0]].leap_start}<br>
+         <strong>Leap Year end:</strong> ${saintData[result[0]].leap_end}` : '');
+
+  } else {
+    output.innerHTML = `
+        ${result.displayname}<br>
+        <strong>Feast Day:</strong> ${result.feast}<br>
+        <strong>Novena Starts:</strong> ${result.start_date}<br>
+        <strong>Novena Ends:</strong> ${result.end_date}` +
+        (result.leap_start ? `<br><strong>Leap Year start:</strong> ${result.leap_start}<br>
+        <strong>Leap Year end:</strong> ${result.leap_end}` : '');
+  }
 }
 
 function handleSuggestionClick(name) {
@@ -68,3 +95,5 @@ function handleSuggestionClick(name) {
   const output = document.getElementById('result');
   if (saint) renderSaintInfo(output, saint);
 }
+
+load();

@@ -7,7 +7,16 @@ const d = new Date();
 const todaysDate = d.getUTCDate().toString().padStart(2, '0') + ' ' + months[d.getUTCMonth()];
 
 function capitalize(str) {
-  return str.replace(/\b\w/g, char => char.toUpperCase());
+    str = str.replace(/\b\w+\b/g, word => {
+        if (/^(M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))$/i.test(word)) {
+            return word.toUpperCase();
+        }
+        return word;
+    });
+
+    str = str.replace(/\b\w/g, char => char.toUpperCase());
+
+    return str;
 }
 
 function suggestMatches(input) {

@@ -21,15 +21,15 @@ desc = '<br/>'.join(desc)
 guid = f"https://raynardgerraldo.github.io/novena#{today.replace(' ', '-').lower()}"
 pub_date = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S %z")
 
-header = """<?xml version="1.0" encoding="UTF-8"?>
+header = f"""<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Novena Feed</title>
+    <title>Novena Feed - {today}</title>
     <link>https://raynardgerraldo.github.io/novena</link>
-    <description>Novena Feed</description>
+    <description>Novena Feed - {today}</description>
     """
 content = f"""<item>
-      <title>Novenas you can start today</title>
+      <title>Novenas you can start today - {today}</title>
       <link>https://raynardgerraldo.github.io/novena</link>
       <guid>{guid}</guid>
       <pubDate>{pub_date}</pubDate>

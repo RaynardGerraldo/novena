@@ -18,6 +18,9 @@ with open("novena.csv", newline='') as cf:
                 feast = row[1]
 
 desc = '<br/>'.join(desc)
+guid = f"https://raynardgerraldo.github.io/novena#{today.replace(' ', '-').lower()}"
+pub_date = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S %z")
+
 header = """<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
@@ -28,7 +31,8 @@ header = """<?xml version="1.0" encoding="UTF-8"?>
 content = f"""<item>
       <title>Novenas you can start today</title>
       <link>https://raynardgerraldo.github.io/novena</link>
-      <guid>https://raynardgerraldo.github.io/novena</guid>
+      <guid>{guid}</guid>
+      <pubDate>{pub_date}</pubDate>
       <description><![CDATA[
         {desc}<br/><br/>
         Feast Day: {feast}<br/>

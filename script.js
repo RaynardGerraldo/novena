@@ -5,6 +5,11 @@ const today = document.getElementById('today');
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const d = new Date();
 const todaysDate = d.getUTCDate().toString().padStart(2, '0') + ' ' + months[d.getUTCMonth()];
+const trailingDatePattern = /-\d{1,2}-(january|february|march|april|may|june|july|august|september|october|november|december)$/i;
+
+function normalizeNameSlug(name) {
+  return name.replace(trailingDatePattern, '');
+}
 
 function capitalize(str) {
     str = str.replace(/\b\w+\b/g, word => {
@@ -22,8 +27,7 @@ function capitalize(str) {
 function suggestMatches(input) {
   const normalized = input.toLowerCase();
   return saintIndex
-    .filter(entry => entry.name.includes(normalized) || normalized.includes(entry.name))
-    .map(entry => entry.display);
+    .filter(entry => entry.name.includes(normalized) || normalized.includes(entry.name));
 }
 
 async function parse() {
@@ -31,16 +35,17 @@ async function parse() {
   const csv = await res.text();
   csv.trim().split('\n').forEach(line => {
     const [name, feast, start_date, end_date, leap_start, leap_end] = line.split(',');
+    const normalizedName = normalizeNameSlug(name);
     const key = name.toLowerCase();
-    const displayname = capitalize(name).replace(/-/g, ' ');
+    const displayname = capitalize(normalizedName).replace(/-/g, ' ');
     if (start_date === todaysDate) {
       foundKey.push(key)
     }
     saintData[key] = { displayname, feast, start_date, end_date, leap_start, leap_end };
     saintIndex.push({
       key,
-      display: name.replace(/-/g, ' '),
-      name: name.replace(/-/g, ' ')
+      display: normalizedName.replace(/-/g, ' '),
+      name: normalizedName.replace(/-/g, ' ')
     });
   });
 }
@@ -61,11 +66,10 @@ document.getElementById('search').addEventListener('keydown', e => {
     } else {
       const matches = suggestMatches(e.target.value.trim());
       if (matches.length === 1) {
-        const matchedKey = matches[0].toLowerCase().replace(/\s+/g, '-');
-        renderSaintInfo(output, saintData[matchedKey]);
+        renderSaintInfo(output, saintData[matches[0].key]);
       } else if (matches.length > 1) {
         output.innerHTML = `<strong>Did you mean:</strong><ul>` +
-          matches.map(name => `<li onclick="handleSuggestionClick('${name}')">${name}</li>`).join('') +
+          matches.map(entry => `<li onclick="handleSuggestionClick('${entry.key}')">${entry.display}</li>`).join('') +
           `</ul>`;
       } else {
         output.textContent = 'Saint not found.';
@@ -98,8 +102,7 @@ function renderSaintInfo(output, result) {
   }
 }
 
-function handleSuggestionClick(name) {
-  const key = name.toLowerCase().replace(/\s+/g, '-');
+function handleSuggestionClick(key) {
   const saint = saintData[key];
   const output = document.getElementById('result');
   if (saint) renderSaintInfo(output, saint);
